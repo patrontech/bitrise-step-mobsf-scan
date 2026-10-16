@@ -1,0 +1,64 @@
+format_version: "11"
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+
+# Local test harness for the step: `bitrise run test` (needs Docker).
+# Scans MobSF's own sample APK and IPA, pinned to a commit of MobSF/test_files.
+app:
+  envs:
+    - FIXTURES_URL: https://raw.githubusercontent.com/MobSF/test_files/7d44d847af8cbdc34d24f284c1616165ac8d9d5a
+
+workflows:
+  test:
+    after_run:
+      - test-android
+      - test-ios
+
+  test-android:
+    steps:
+      - script@1:
+          title: Fetch sample APK
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                mkdir -p _tmp
+                curl --fail --silent --show-error --location -o _tmp/android.apk "$FIXTURES_URL/android.apk"
+      - path::./:
+          title: Scan the sample APK
+          inputs:
+            - target_path: ./_tmp/android.apk
+            - report_prefix: Test
+            - output_dir: ./_tmp/report-android
+      - script@1:
+          title: Check outputs
+          inputs:
+            - content: &check |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                test -s "$MOBSF_PDF_PATH"
+                test -s "$MOBSF_JSON_PATH"
+                test -s "$MOBSF_SCORECARD_PATH"
+                test -n "$MOBSF_SECURITY_SCORE"
+                ls -l "$MOBSF_OUTPUT_DIR"
+                echo "$MOBSF_APP_NAME $MOBSF_APP_VERSION ($MOBSF_APP_BUILD), score $MOBSF_SECURITY_SCORE, MobSF $MOBSF_VERSION"
+
+  test-ios:
+    steps:
+      - script@1:
+          title: Fetch sample IPA
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                mkdir -p _tmp
+                curl --fail --silent --show-error --location -o _tmp/ios.ipa "$FIXTURES_URL/ios.ipa"
+      - path::./:
+          title: Scan the sample IPA
+          inputs:
+            - target_path: ./_tmp/ios.ipa
+            - report_prefix: Test
+            - output_dir: ./_tmp/report-ios
+      - script@1:
+          title: Check outputs
+          inputs:
+            - content: *check

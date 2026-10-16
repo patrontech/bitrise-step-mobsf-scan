@@ -1,0 +1,40 @@
+name: Test
+
+# Runs the step's own `bitrise run test` harness, which scans MobSF's sample
+# APK and IPA, on a Linux runner with Docker.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      BITRISE_CLI_VERSION: v3.1.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint
+        run: shellcheck step.sh
+
+      - name: Install the Bitrise CLI
+        run: |
+          curl --fail --silent --show-error --location \
+            "https://github.com/bitrise-io/bitrise/releases/download/$BITRISE_CLI_VERSION/bitrise-Linux-x86_64" \
+            -o /usr/local/bin/bitrise
+          chmod +x /usr/local/bin/bitrise
+          bitrise setup
+
+      - name: Run the step against the sample APK and IPA
+        run: bitrise run test
+
+      - name: Keep the reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: _tmp/report-*
+          if-no-files-found: warn
