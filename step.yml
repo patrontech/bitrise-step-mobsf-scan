@@ -1,25 +1,8 @@
 title: MobSF Scan
-summary: Scans an IPA or APK with MobSF, in Docker, and produces PDF and JSON reports.
-description: |
-  Starts [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) in a
-  local Docker container, uploads the app at `target_path`, runs a static scan,
-  and writes three files into a fresh output directory:
-
-  - `<prefix>-<platform>-MobSF-<YYYY-MM>-v<version>-b<build>.pdf`, the report;
-  - the same name with `.json`, the full JSON report;
-  - the same name with `-scorecard.json`, MobSF's scorecard.
-
-  Point `deploy-to-bitrise-io` at `$MOBSF_OUTPUT_DIR` to publish them.
-
-  Findings never fail the step: the report is the deliverable. The step fails
-  only when it can't produce a valid report.
-
-  **Needs a Linux stack.** Docker can't run on Bitrise's macOS machines, so to
-  scan an IPA, build it on macOS and hand it to a Linux workflow as a Pipeline
-  intermediate file.
+summary: Internal step.
+description: Internal step. Not supported for outside use.
 website: https://github.com/patrontech/bitrise-step-mobsf-scan
 source_code_url: https://github.com/patrontech/bitrise-step-mobsf-scan
-support_url: https://github.com/patrontech/bitrise-step-mobsf-scan/issues
 
 type_tags:
   - utility
@@ -31,66 +14,41 @@ toolkit:
 inputs:
   - target_path:
     opts:
-      title: App to scan
-      summary: Path to the `.ipa`, `.apk`, or `.aab` to scan.
+      title: Target
       is_required: true
       is_expand: true
   - platform:
     opts:
-      title: Platform label
-      summary: Used in file names. Defaults to `iOS` for an `.ipa` and `Android` otherwise.
+      title: Platform
       is_expand: true
   - report_prefix: MobSF
     opts:
-      title: Report name prefix
-      summary: First part of each output file's name, e.g. the client's name.
+      title: Prefix
       is_expand: true
   - mobsf_image: opensecurity/mobile-security-framework-mobsf:v4.5.3
     opts:
-      title: MobSF Docker image
-      summary: Keep this pinned. Scores and report layout change between MobSF versions.
+      title: Image
       is_expand: true
   - output_dir:
     opts:
       title: Output directory
-      summary: Must be empty or absent. Defaults to a fresh temporary directory.
       is_expand: true
   - startup_timeout: "600"
     opts:
-      title: Startup timeout (seconds)
-      summary: How long to wait for MobSF to start answering.
+      title: Startup timeout
       is_expand: true
   - scan_timeout: "3600"
     opts:
-      title: Scan timeout (seconds)
-      summary: How long the scan request may take.
+      title: Scan timeout
       is_expand: true
 
 outputs:
   - MOBSF_OUTPUT_DIR:
-    opts:
-      title: Directory holding the reports, and nothing else
   - MOBSF_PDF_PATH:
-    opts:
-      title: The PDF report
   - MOBSF_JSON_PATH:
-    opts:
-      title: The full JSON report
   - MOBSF_SCORECARD_PATH:
-    opts:
-      title: MobSF's scorecard, as JSON
   - MOBSF_APP_NAME:
-    opts:
-      title: App name, as MobSF read it from the binary
   - MOBSF_APP_VERSION:
-    opts:
-      title: App version, as MobSF read it from the binary
   - MOBSF_APP_BUILD:
-    opts:
-      title: Build number or version code, as MobSF read it from the binary
   - MOBSF_SECURITY_SCORE:
-    opts:
-      title: MobSF's security score (0–100)
   - MOBSF_VERSION:
-    opts:
-      title: The MobSF version that produced the report

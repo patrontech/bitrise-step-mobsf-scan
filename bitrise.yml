@@ -1,8 +1,7 @@
 format_version: "11"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
-# Local test harness for the step: `bitrise run test` (needs Docker).
-# Scans MobSF's own sample APK and IPA, pinned to a commit of MobSF/test_files.
+# `bitrise run test` (needs Docker).
 app:
   envs:
     - FIXTURES_URL: https://raw.githubusercontent.com/MobSF/test_files/7d44d847af8cbdc34d24f284c1616165ac8d9d5a

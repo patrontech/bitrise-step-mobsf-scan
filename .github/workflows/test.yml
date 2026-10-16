@@ -1,7 +1,6 @@
 name: Test
 
-# Runs the step's own `bitrise run test` harness, which scans MobSF's sample
-# APK and IPA, on a Linux runner with Docker.
+# Runs `bitrise run test` on Linux.
 on:
   push:
     branches: [main]
