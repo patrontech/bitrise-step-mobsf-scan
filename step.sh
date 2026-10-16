@@ -58,7 +58,8 @@ cleanup() {
   if docker container inspect "$container" > /dev/null 2>&1; then
     if [[ $status -ne 0 ]]; then
       docker logs "$container" > "$output_dir/mobsf-container.log" 2>&1 || true
-      log "Saved MobSF's container log to $output_dir/mobsf-container.log."
+      log "The last lines of MobSF's container log (all of it is in $output_dir/mobsf-container.log):"
+      tail -n 60 "$output_dir/mobsf-container.log" >&2 || true
     fi
     docker rm -f "$container" > /dev/null 2>&1 || true
   fi

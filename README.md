@@ -46,7 +46,7 @@ The files are named `<prefix>-<platform>-MobSF-<YYYY-MM>-v<version>-b<build>`, w
 
 - **Findings never fail the step.** The report is the deliverable, and people triage what's in it.
 - **The step fails only when it can't produce a valid report.** The PDF must start with `%PDF-` and be bigger than a trivial size.
-- **A failed run keeps MobSF's container log** in the output directory.
+- **A failed run keeps MobSF's container log** in the output directory, and prints its last lines into the build log.
 - **The API key is generated fresh each run**, and the container is removed afterwards, so no secrets are needed.
 
 ## Testing
