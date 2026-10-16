@@ -46,6 +46,19 @@ else
   [[ -z "$(ls -A "$output_dir")" ]] || fail "output_dir '$output_dir' must be empty, so that only reports get deployed from it."
 fi
 
+# Exports a step output (when running under Bitrise) and prints it.
+export_output() {
+  if command -v envman > /dev/null; then
+    envman add --key "$1" --value "$2"
+  fi
+  printf '  %-22s %s\n' "$1" "$2"
+}
+
+# Export the output directory now rather than at the end, so that a failed run
+# can still deploy MobSF's container log from it.
+log "Output directory:"
+export_output MOBSF_OUTPUT_DIR "$output_dir"
+
 # --- MobSF container ----------------------------------------------------------
 
 # The container is local and lives only as long as this step, so a throwaway
@@ -179,15 +192,7 @@ rm -rf "$work_dir"
 
 # --- Outputs ------------------------------------------------------------------
 
-export_output() {
-  if command -v envman > /dev/null; then
-    envman add --key "$1" --value "$2"
-  fi
-  printf '  %-22s %s\n' "$1" "$2"
-}
-
 log "Done. Outputs:"
-export_output MOBSF_OUTPUT_DIR "$output_dir"
 export_output MOBSF_PDF_PATH "$pdf_path"
 export_output MOBSF_JSON_PATH "$json_path"
 export_output MOBSF_SCORECARD_PATH "$scorecard_path"
